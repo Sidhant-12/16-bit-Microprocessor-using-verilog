@@ -32,8 +32,8 @@ module processor(
             datamemory[j] <= 8'b00000000; // Clear all the garbage values of datamemory
 
         // Fetch cycle
-        regarray1[3'b000] <= 16'b1000000111111111; // Load r0 register with 00000111;
-        regarray1[3'b001] <= 16'b1000001111111111; // Load r1 register with 00000010;
+        regarray1[3'b000] <= 16'b1000000100000111; // Load r0 register with 00000111;
+        regarray1[3'b001] <= 16'b1000001100000010; // Load r1 register with 00000010;
         regarray1[3'b010] <= 16'b1000010100001000; // Load r2 register with 00001000;
         regarray1[3'b011] <= 16'b1000011000000001; // Load r3 register with 00000001;
         regarray1[3'b100] <= 16'b0000111000001001; // r7=r0+r1
