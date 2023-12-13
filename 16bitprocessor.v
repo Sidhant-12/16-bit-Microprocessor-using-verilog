@@ -63,38 +63,84 @@ module processor(
     assign source1 = ir[8:6]; // Register 1
     assign source2 = ir[5:3]; // Register 2
 
-    always @(posedge clk) begin
-        if (operation == 1'b0) begin // ALU operation
-            if (alu == 3'b000) begin // Addition
-                sum1 = regarray[source1] + regarray[source2];
-                sum = sum1[7:0];
-                carry = sum1[8];
-                zero = (sum == 8'b0);
-                regarray[dest] = sum;
-            end
-            else if (alu == 3'b001) begin // Subtraction
-                sum1 = regarray[source1] - regarray[source2];
-                sum = sum1[7:0];
-                carry = sum1[8];
-                zero = (sum == 8'b0);
-                regarray[dest] = sum;
-            end
-            else if (alu == 3'b010) begin // ANDing
-                sum1 = regarray[source1] & regarray[source2];
-                sum = sum1[7:0];
-                carry = sum1[8];
-                zero = (sum == 8'b0);
-                regarray[dest] = sum;
-            end
-            else if (alu == 3'b011) begin // ORing
-                sum1 = regarray[source1] | regarray[source2];
-                sum = sum1[7:0];
-                carry = sum1[8];
-                zero = (sum == 8'b0);
-                regarray[dest] = sum;
-            end
-            // Add more ALU operations as needed
+always @(posedge clk) begin
+    if (operation == 1'b0) begin // ALU operation
+        if (alu == 3'b000) begin // addition
+            sum1 = regarray[source1] + regarray[source2];
+            sum = sum1[7:0];
+            carry = sum1[8];
+            zero = (sum == 8'b0);
+            regarray[dest] = sum;
+        end
+
+        if (alu == 3'b001) begin // subtraction
+            sum1 <= regarray[source1] - regarray[source2];
+            sum <= sum1[7:0];
+            carry <= sum1[8];
+            zero <= (sum == 8'b0);
+            regarray[dest] <= sum;
+        end
+
+        if (alu == 3'b010) begin // Anding
+            sum1 <= regarray[source1] & regarray[source2];
+            sum <= sum1[7:0];
+            carry <= sum1[8];
+            zero <= (sum == 8'b0);
+            regarray[dest] <= sum;
+        end
+
+        if (alu == 3'b011) begin // ORing
+            sum1 <= regarray[source1] | regarray[source2];
+            sum <= sum1[7:0];
+            carry <= sum1[8];
+            zero <= (sum == 8'b0);
+            regarray[dest] <= sum;
+        end
+
+        if (alu == 3'b100) begin // Bitwise Xor
+            sum1 <= regarray[source1] ^ regarray[source2];
+            sum <= sum1[7:0];
+            carry <= sum1[8];
+            zero <= (sum == 8'b0);
+            regarray[dest] <= sum;
+        end
+
+        if (alu == 3'b101) begin // not a
+            sum1 <= ~regarray[source1];
+            sum <= sum1[7:0];
+            carry <= sum1[8];
+            zero <= (sum == 8'b0);
+            regarray[dest] <= sum;
+        end
+
+        if (alu == 3'b110) begin // not b
+            sum1 <= ~regarray[source2];
+            sum <= sum1[7:0];
+            carry <= sum1[8];
+            zero <= (sum == 8'b0);
+            regarray[dest] <= sum;
+        end
+
+        if (alu == 3'b111) begin // A > B
+            sum1 <= regarray[source1] > regarray[source2];
+            sum <= sum1[7:0];
+            carry <= sum1[8];
+            zero <= (sum == 8'b0);
+            regarray[dest] <= sum;
         end
     end
+
+    if (opcode == 4'b1000) begin
+        regarray[dest] <= datamemorylocation; // load register (mvi r1,2)
+    end
+
+    if (opcode == 4'b1001) begin
+        regarray[dest] <= datamemory[datamemorylocation]; // load register from datamemory (ld r16,x)
+    end
+
+    if (opcode == 4'b1010) begin
+        datamemory[datamemorylocation] <= regarray[dest]; // store register value to datamemory (sts 8000,r16)
+    end
+end
 
 endmodule
